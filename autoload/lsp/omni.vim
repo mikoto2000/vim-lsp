@@ -283,6 +283,9 @@ function! s:apply_text_edit() abort
     let l:text_edit = l:user_data[s:user_data_key]
     let l:expanded_text_edit = s:expand_range(l:text_edit, len(v:completed_item['word']))
 
+    " save v:completed_item for post process
+    let saved_completed_item = v:completed_item
+
     " apply textEdit
     call lsp#utils#text_edit#apply_text_edits(expand('%:p'), [l:expanded_text_edit])
 
@@ -293,6 +296,11 @@ function! s:apply_text_edit() abort
     let l:col = l:start['character']
     let l:new_text_length = len(l:text_edit['newText']) + 1
     call cursor(l:line, l:col + l:new_text_length)
+
+    " call post process if present
+    if !empty(g:lsp_complete_done_post_process)
+        call call(g:lsp_complete_done_post_process[0], [l:saved_completed_item, l:user_data])
+    endif
 endfunction
 
 function! s:expand_range(text_edit, expand_length) abort

@@ -19,6 +19,7 @@ CONTENTS                                                  *vim-lsp-contents*
       g:lsp_use_event_queue                |g:lsp_use_event_queue|
       g:lsp_get_vim_completion_item        |g:lsp_get_vim_completion_item|
       g:lsp_get_supported_capabilities     |g:lsp_get_supported_capabilities|
+      g:lsp_complete_done_post_process     |g:lsp_complete_done_post_process|
     Functions                            |vim-lsp-functions|
       enable                               |vim-lsp-enable|
       disable                              |vim-lsp-disable|
@@ -226,6 +227,14 @@ g:lsp_get_supported_capabilities         *g:lsp_get_supported_capabilities*
     Note: You can obtain the default supported capabilities of vim-lsp by
     calling `lsp#omni#default_get_supported_capabilities` from within your
     function.
+
+g:lsp_complete_done_post_process         *g:lsp_complete_done_post_process*
+    Type: |List|
+    Default: `[]`
+
+    A |List| containing one element of type |Funcref|. This element is a
+    reference to the function that calls last in CompleteDone.
+    For example, it can be used for snippet search and extracting.
 
 ===============================================================================
 FUNCTIONS	                                        *vim-lsp-functions*
