@@ -54,6 +54,8 @@ function! lsp#omni#complete(findstart, base) abort
             let s:completion['status'] = s:completion_status_pending
         endif
 
+        let s:completion['matches'] = []
+
         call s:send_completion_request(l:info)
 
         if g:lsp_async_completion
@@ -97,12 +99,11 @@ function! s:handle_omnicompletion(server_name, complete_counter, data) abort
     endif
 
     let l:result = s:get_completion_result(a:data)
-    let l:matches = l:result['matches']
+    let s:completion['matches'] = extend(s:completion['matches'], l:result['matches'])
 
     if g:lsp_async_completion
-        call complete(col('.'), l:matches)
+        call complete(col('.'), s:completion['matches'])
     else
-        let s:completion['matches'] = l:matches
         let s:completion['status'] = s:completion_status_success
     endif
 endfunction
@@ -128,16 +129,17 @@ endfunction
 
 function! s:send_completion_request(info) abort
     let s:completion['counter'] = s:completion['counter'] + 1
-    let l:server_name = a:info['server_names'][0]
-    " TODO: support multiple servers
-    call lsp#send_request(l:server_name, {
-                \ 'method': 'textDocument/completion',
-                \ 'params': {
-                \   'textDocument': lsp#get_text_document_identifier(),
-                \   'position': lsp#get_position(),
-                \ },
-                \ 'on_notification': function('s:handle_omnicompletion', [l:server_name, s:completion['counter']]),
-                \ })
+
+    for l:server_name in a:info['server_names']
+        call lsp#send_request(l:server_name, {
+                    \ 'method': 'textDocument/completion',
+                    \ 'params': {
+                    \   'textDocument': lsp#get_text_document_identifier(),
+                    \   'position': lsp#get_position(),
+                    \ },
+                    \ 'on_notification': function('s:handle_omnicompletion', [l:server_name, s:completion['counter']]),
+                    \ })
+    endfor
 endfunction
 
 function! s:get_completion_result(data) abort
