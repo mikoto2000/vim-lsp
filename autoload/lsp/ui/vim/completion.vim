@@ -23,6 +23,7 @@ endfunction
 " 6. then the line is `call getbufline(|` in `s:on_complete_done_after`
 "
 function! s:on_complete_done() abort
+  call lsp#log('v:completed_item in on_complete_done', v:completed_item)
   if empty(v:completed_item)
     doautocmd User lsp_complete_done
     return
@@ -30,8 +31,10 @@ function! s:on_complete_done() abort
 
   " Try to get managed user_data.
   let l:managed_user_data = lsp#omni#get_managed_user_data_from_completed_item(v:completed_item)
+  call lsp#log('l:managed_user_data in on_complete_done', l:managed_user_data)
 
   " Clear managed user_data.
+  call lsp#log('lsp#omni#_clear_managed_user_data_map')
   call lsp#omni#_clear_managed_user_data_map()
 
   " If managed user_data does not exists, skip it.

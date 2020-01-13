@@ -141,7 +141,9 @@ function! s:display_completions(timer, info) abort
     let s:completion['status'] = ''
 
     if mode() is# 'i'
+        call lsp#log('complete_info before complete', string(complete_info()))
         call complete(s:start_pos + 1, s:completion['matches'])
+        call lsp#log('complete_info after complete', string(complete_info()))
     endif
 endfunction
 
